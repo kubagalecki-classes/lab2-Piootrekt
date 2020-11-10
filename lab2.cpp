@@ -1,84 +1,55 @@
-#include <iostream>
-using namespace std;
+#pragma once
 
-class Wektor
+#include "Resource.hpp"
+
+class ResourceManager
 {
-public:
-    Wektor(int n)
+    // Twoja implementacja tutaj
+    //nie martwie sie o error na resource bo to jest header
+    public:
+    ResourceManager()
     {
-        x = new double[n];
-        for (int i = 0; i < n; i++) {
-            x[i] = 0;
-        }
-        dlug = n;
-        poj  = n;
+      //konstruktor domyslny, tworzy resource i przypisuje go do res
+      Resource res_in;
+      res=&res_in;
     }
-
-    ~Wektor()
+    ResourceManager(ResourceManager& resm) : res{ resm.res } {}
+    ResourceManager(ResourceManager&& resm) : res{resm.res}
     {
-        delete[] x;
-        // cout << "~" << endl;
+      //konstruktor przenoszacy - sprawdza, czy &resm i this to nie to samo,
+      //jesli tak to nic nie rob
+      //if (this==resm){}
+      //else
+      
+      resm.res = nullptr;
+      
     }
-
-    double* point() { return x; }
-
-    int getd() { return dlug; }
-
-    int getp() { return poj; }
-
-    void print()
+    ~ResourceManager()
     {
-        for (int i = 0; i < dlug; i++) {
-            cout << x[i] << endl;
-        }
+      //destruktor, niszczy wskaznik do res
+      delete res;
     }
-
-    void zmienDlugosc(int newn)
+    ResourceManager& operator=(ResourceManager&& resm) 
     {
-        if (newn <= poj) {
-            for (int i = newn; i < poj; i++) {
-                x[i] = 0;
-            }
-            dlug = newn;
-        }
-        else {
-            double* temp = new double[newn];
-            for (int i = 0; i < dlug; i++) {
-                temp[i] = x[i];
-            }
-            delete[] x;
-            x = temp;
+        res = nullptr;
+        res = resm.res;
+        //przenoszacy operator przypisania
 
-            dlug = newn;
-            poj  = newn;
-            for (int i = 0; i < poj; i++) {
-                x[i] = 0;
-            }
-        }
+        resm.res = nullptr;
+        return *this;
     }
-
-private:
-    double* x;
-    int     dlug;
-    int     poj;
+    ResourceManager& operator=(ResourceManager& resm)
+    {
+        res = nullptr;
+        res = resm.res;
+      //kopiujacy operator przypisania - zwalnia zasob na ktory wskazuje res i tworzy 
+      //obiekt bedacy kopia resm.res i przypisuje do niego adres res
+        return *this;
+    }
+    double get()
+    {
+      return res->get();  
+    }
+    private:
+    Resource* res;
 };
-
-int main()
-{
-    Wektor  xD{10};
-    double* bepis = xD.point();
-    cout << bepis << endl;
-    xD.print();
-    bepis = xD.point();
-    cout << bepis << endl;
-    xD.zmienDlugosc(37);
-    xD.print();
-    bepis = xD.point();
-    cout << bepis << endl;
-    xD.zmienDlugosc(21);
-    xD.print();
-    bepis = xD.point();
-    cout << bepis << endl;
-}
-
-//double& operator[](unsigned int) zwracajacy referencje do tablicy otrzymanej z tego indeksu
