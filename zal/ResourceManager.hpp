@@ -10,39 +10,46 @@ class ResourceManager
     ResourceManager()
     {
       //konstruktor domyslny, tworzy resource i przypisuje go do res
-      Resource res_in;
+      Resource* res_in = new Resource{};
       res=res_in;
+      //delete res_in;
     }
-    ResourceManager(ResourceManager& resm)
-    {
-      //konstruktor kopiujacy - w liscie inicjalizacyjnej tworzy nowy obiekt bedacy kopia resm.res
-      //i przypisuje jego adres do res
-    }
-    ResourceManager(ResourceManager&& resm)
+    ResourceManager(ResourceManager& resm) : res{ resm.res } {}
+    ResourceManager(ResourceManager&& resm) : res{resm.res}
     {
       //konstruktor przenoszacy - sprawdza, czy &resm i this to nie to samo,
       //jesli tak to nic nie rob
-      res = resm.res;
+      //if (this==resm){}
+      //else
+      
       resm.res = nullptr;
+      
     }
     ~ResourceManager()
     {
       //destruktor, niszczy wskaznik do res
       delete res;
     }
-    ResourceManager& operator=(ResourceManager&& resm)
+    ResourceManager& operator=(ResourceManager&& resm) 
     {
-      //przenoszacy operator przypisania
-      resm.res = nullptr;
+        res = nullptr;
+        res = resm.res;
+        //przenoszacy operator przypisania
+
+        resm.res = nullptr;
+        return *this;
     }
-    ResourceManager operator=(ResourceManager& resm)
+    ResourceManager& operator=(ResourceManager& resm)
     {
+        res = nullptr;
+        res = resm.res;
       //kopiujacy operator przypisania - zwalnia zasob na ktory wskazuje res i tworzy 
       //obiekt bedacy kopia resm.res i przypisuje do niego adres res
+        return *this;
     }
     double get()
     {
-      return res->get();  //zle: passing 'const Resource' as 'this' argument discards qualifiers
+      return res->get();  
     }
     private:
     Resource* res;
