@@ -28,7 +28,7 @@ class ResourceManager
     ~ResourceManager()
     {
       //destruktor, niszczy wskaznik do res
-      delete res;
+      res = nullptr;
     }
     ResourceManager& operator=(ResourceManager&& resm) 
     {
