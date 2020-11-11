@@ -1,32 +1,75 @@
 #pragma once
 
-#include <algorithm>
-#include <array>
-#include <random>
+#include "Resource.hpp"
+#include <iostream>
+using std::cout;
+using std::endl;
 
-#include "ConstructionTracker.hpp"
-
-struct Resource : ConstructionTracker
+class ResourceManager
 {
-    static constexpr size_t size = 1'000'000'0u;
-    static const size_t     get_index;
-
-    Resource()
+    // Twoja implementacja tutaj
+    //nie martwie sie o error na resource bo to jest header
+    public:
+    ResourceManager() : res{new Resource}
     {
-        std::random_device                       rd;
-        std::mt19937                             gen(rd());
-        std::uniform_real_distribution< double > dist(0, 1);
-        std::generate(tab.begin(), tab.end(), [&]() { return dist(gen); });
+      //konstruktor domyslny, tworzy resource i przypisuje go do res
+
+      //delete res_in;
+    }
+    ResourceManager(const ResourceManager& resm) : res{new Resource(*resm.res)}
+    {
+        //konstruktor kopiujacy - tworzy nowy obiekt bedacy kopia resm.res
+    }
+    ResourceManager(ResourceManager&& resm) : res{resm.res}
+    {
+      //konstruktor przenoszacy
+
+      resm.res = nullptr;
+    }
+    ~ResourceManager()
+    {
+      //destruktor, niszczy to na co wskazuje r
+        //if (res == nullptr) {}
+        //else
+        //{
+            delete res;
+        //}
+
+    }
+    ResourceManager& operator=(const ResourceManager& resm)
+    {
+        //sprawdza, czy& resm i this to nie to samo,
+        //jesli tak to nic nie rob
+
+            delete this->res;
+            this->res = new Resource(*resm.res);
+
+        //kopiujacy operator przypisania - zwalnia zasob na ktory wskazuje res i tworzy
+        //obiekt bedacy kopia resm.res i przypisuje do niego adres res
+        return *this;
+    }
+    ResourceManager& operator=(ResourceManager&& resm)
+    {
+        //przenoszacy operator przypisania
+        //sprawdza, czy& resm i this to nie to samo,
+        //jesli tak to nic nie rob
+        //if (this->res == resm.res) {}
+        //else
+        //{
+            delete this->res;
+
+            this->res = resm.res;
+        //}
+
+        resm.res = nullptr;
+
+        return *this;
     }
 
-    double get() { return tab.at(get_index); }
-
-    std::array< double, size > tab;
+    double get()
+    {
+      return res->get();
+    }
+    private:
+    Resource* res;
 };
-
-const size_t Resource::get_index = []() {
-    std::random_device                      rd;
-    std::mt19937                            gen(rd());
-    std::uniform_int_distribution< size_t > dist(0, size - 1);
-    return dist(gen);
-}();
