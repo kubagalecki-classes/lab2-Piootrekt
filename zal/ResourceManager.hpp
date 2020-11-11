@@ -7,46 +7,63 @@ class ResourceManager
     // Twoja implementacja tutaj
     //nie martwie sie o error na resource bo to jest header
     public:
-    ResourceManager()
+    ResourceManager() : res{new Resource}
     {
       //konstruktor domyslny, tworzy resource i przypisuje go do res
-      Resource* res_in = new Resource{};
-      res=res_in;
+      
       //delete res_in;
     }
-    ResourceManager(ResourceManager& resm) : res{ resm.res } {}
-    ResourceManager(ResourceManager&& resm) : res{resm.res}
+    ResourceManager(const ResourceManager& resm) : res{ resm.res } 
     {
-      //konstruktor przenoszacy - sprawdza, czy &resm i this to nie to samo,
-      //jesli tak to nic nie rob
-      //if (this==resm){}
-      //else
-      
-      resm.res = nullptr;
-      
+        //konstruktor kopiujacy - tworzy nowy obiekt bedacy kopia resm.res
+    }
+    ResourceManager(ResourceManager&& resm)
+    {
+      //konstruktor przenoszacy 
+      res = resm.res;
+      resm.res = nullptr;      
     }
     ~ResourceManager()
     {
-      //destruktor, niszczy wskaznik do res
-      res = nullptr;
-    }
-    ResourceManager& operator=(ResourceManager&& resm) 
-    {
-        res = nullptr;
-        res = resm.res;
-        //przenoszacy operator przypisania
-
-        resm.res = nullptr;
-        return *this;
+      //destruktor, niszczy to na co wskazuje r
+      //res = nullptr;
+        if (res==nullptr){}
+        else
+        {
+            delete res;
+        }
     }
     ResourceManager& operator=(ResourceManager& resm)
     {
-        res = nullptr;
-        res = resm.res;
-      //kopiujacy operator przypisania - zwalnia zasob na ktory wskazuje res i tworzy 
-      //obiekt bedacy kopia resm.res i przypisuje do niego adres res
+        //sprawdza, czy& resm i this to nie to samo,
+        //jesli tak to nic nie rob
+        if (res == resm.res) {}
+        else
+        {
+            res = nullptr;
+            res = resm.res;
+        }
+        //kopiujacy operator przypisania - zwalnia zasob na ktory wskazuje res i tworzy 
+        //obiekt bedacy kopia resm.res i przypisuje do niego adres res
         return *this;
     }
+    ResourceManager& operator=(ResourceManager&& resm) 
+    {
+        //przenoszacy operator przypisania
+        //sprawdza, czy& resm i this to nie to samo,
+        //jesli tak to nic nie rob
+        if (res == resm.res) {}
+        else
+        {
+            res = nullptr;
+            res = resm.res;
+        }
+        
+        resm.res = nullptr;
+        
+        return *this;
+    }
+    
     double get()
     {
       return res->get();  

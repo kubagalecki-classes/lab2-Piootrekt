@@ -1,55 +1,71 @@
-#pragma once
+#include <iostream>
+using namespace std;
 
-#include "Resource.hpp"
-
-class ResourceManager
+class Wektor
 {
-    // Twoja implementacja tutaj
-    //nie martwie sie o error na resource bo to jest header
-    public:
-    ResourceManager()
+public:
+    Wektor(int n)
     {
-      //konstruktor domyslny, tworzy resource i przypisuje go do res
-      Resource res_in;
-      res=&res_in;
+        x = new double[n];
+        for (int i = 0; i < n; i++) {
+            x[i] = 0;
+        }
+        dlug = n;
+        poj  = n;
     }
-    ResourceManager(ResourceManager& resm) : res{ resm.res } {}
-    ResourceManager(ResourceManager&& resm) : res{resm.res}
-    {
-      //konstruktor przenoszacy - sprawdza, czy &resm i this to nie to samo,
-      //jesli tak to nic nie rob
-      //if (this==resm){}
-      //else
-      
-      resm.res = nullptr;
-      
-    }
-    ~ResourceManager()
-    {
-      //destruktor, niszczy wskaznik do res
-      delete res;
-    }
-    ResourceManager& operator=(ResourceManager&& resm) 
-    {
-        res = nullptr;
-        res = resm.res;
-        //przenoszacy operator przypisania
 
-        resm.res = nullptr;
-        return *this;
-    }
-    ResourceManager& operator=(ResourceManager& resm)
+    ~Wektor()
     {
-        res = nullptr;
-        res = resm.res;
-      //kopiujacy operator przypisania - zwalnia zasob na ktory wskazuje res i tworzy 
-      //obiekt bedacy kopia resm.res i przypisuje do niego adres res
-        return *this;
+        delete[] x;
+        cout << "~" << endl;
     }
-    double get()
+
+    double* point() { return x; }
+
+    int getd() { return dlug; }
+
+    int getp() { return poj; }
+
+    void print()
     {
-      return res->get();  
+        for (int i = 0; i < dlug; i++) {
+            cout << x[i] << endl;
+        }
     }
-    private:
-    Resource* res;
+
+    void zmienDlugosc(int newn)
+    {
+        if (newn <= poj) {
+            for (int i = newn; i < poj; i++) {
+                x[i] = 0;
+            }
+            dlug = newn;
+        }
+        else {
+            double* temp = new double[newn];
+            for (int i = 0; i < dlug; i++) {
+                temp[i] = x[i];
+            }
+            delete[] x;
+            x = temp;
+
+            dlug = newn;
+            poj  = newn;
+            for (int i = 0; i < poj; i++) {
+                x[i] = 0;
+            }
+        }
+    }
+
+private:
+    double* x;
+    int     dlug;
+    int     poj;
 };
+
+int main()
+{
+    Wektor w1{10};
+}
+
+//double& operator[](unsigned int) zwracajacy referencje do tablicy otrzymanej z tego indeksu 
